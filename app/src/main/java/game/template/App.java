@@ -3,11 +3,16 @@
  */
 package game.template;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -17,47 +22,83 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
 public class App extends Application
 {
     private VBox root;
+    private Stage stage;
+    private Scene scene;
     private StackPane table;
     private int width = 800;
     private int height = 600;
+
+    Scene mainMenu, stageMenu, battleMenu, gameOverMenuScene;
 
     @Override
     public void start(Stage primaryStage) throws Exception
     {
         root = new VBox();
 
-        // menubar
-        root.getChildren().add(createMenuBar());
+        // // menubar
+        // root.getChildren().add(createMenuBar());
 
-        // mouse handler
-        addMouseHandler();
+        // // mouse handler
+        // addMouseHandler();
+        
+        // //key handler
+        // addKeyHandler();
+        // table = new StackPane();
+        // root.getChildren().add(table);
 
-        table = new StackPane();
-        root.getChildren().add(table);
+        // // don't give a width or height to the scene
+        // //Scene scene = new Scene(root);
+        // Scene scene = new Scene(root, width, height);
 
-        // don't give a width or height to the scene
-        //Scene scene = new Scene(root);
-        Scene scene = new Scene(root, width, height);
-
-        URL styleURL = getClass().getResource("/style.css");
-        String stylesheet = styleURL.toExternalForm();
-        scene.getStylesheets().add(stylesheet);
+        // URL styleURL = getClass().getResource("/style.css");
+        // String stylesheet = styleURL.toExternalForm();
+        // scene.getStylesheets().add(stylesheet);
         primaryStage.setTitle("Play Poker like it's 2004");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        // primaryStage.setScene(scene);
+        // primaryStage.show();
 
+
+
+        
+        try {
+            Parent root = FXMLLoader.load(App.class.getResource("/scenes/mainMenu.fxml"));
+            Scene scene = new Scene(root);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         primaryStage.setOnCloseRequest(event -> {
             System.out.println("oncloserequest");
         });
-
         //System.out.printf("center of stackpane  %f, %f\n", table.getWidth() / 2, table.getHeight() / 2);
 
     }
+    
+    
+    public void switchToScene1(ActionEvent event) throws IOException {
+        root = FXMLLoader.load(getClass().getResource("/scenes/mainMenu.fxml"));
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+    }
+    
+    public void switchToScene2(ActionEvent event) throws IOException {
+        addMouseHandler();
+        Parent root = FXMLLoader.load(getClass().getResource("/scenes/testScene.fxml"));
+        table = new StackPane();
+        root.getChildrenUnmodifiable().add(table);
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
 
+    }
     private void addMouseHandler()
     {
         root.setOnMouseClicked(event -> {
