@@ -21,119 +21,98 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-public class App extends Application
-{
+
+public class App extends Application {
     private VBox root;
     private Stage stage;
     private StackPane table;
     private int width = 800;
     private int height = 600;
 
+    // game handling
+    private Player player = new Player(10, "neuros.png", 5);
+
     Scene mainMenuScene, stageMenu, battleScene, gameOverMenuScene;
 
     @Override
-    public void start(Stage primaryStage) throws Exception
-    {
-    //    root = new VBox();
-
-    //     // menubar
-    //     root.getChildren().add(createMenuBar());
-
-    //     // mouse handler
-    //    addMouseHandler();
-        
-    //     //key handler
-    //     addKeyHandler();
-    //     table = new StackPane();
-    //     root.getChildren().add(table);
-
-    //     // don't give a width or height to the scene
-    //     //Scene scene = new Scene(root);
-    //     Scene scene = new Scene(root, width, height);
-
-    //     URL styleURL = getClass().getResource("/style.css");
-    //     String stylesheet = styleURL.toExternalForm();
-    //     scene.getStylesheets().add(stylesheet);
-    //    primaryStage.setTitle("Play Poker like it's 2004");
-    //     primaryStage.setScene(scene);
-    //     primaryStage.show();
-
-
-
-        
+    public void start(Stage primaryStage) throws Exception {
         try {
+
             stage = primaryStage;
             root = FXMLLoader.load(getClass().getResource("/scenes/mainMenu.fxml"));
             mainMenuScene = new Scene(root);
             stage.setScene(mainMenuScene);
             stage.show();
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         stage.setOnCloseRequest(event -> {
             System.out.println("oncloserequest");
         });
-        //System.out.printf("center of stackpane  %f, %f\n", table.getWidth() / 2, table.getHeight() / 2);
+        // System.out.printf("center of stackpane %f, %f\n", table.getWidth() / 2,
+        // table.getHeight() / 2);
 
     }
-    
-    
+
     public void switchToMenu(ActionEvent event) throws IOException {
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(mainMenuScene);
         stage.show();
     }
-    
+
     public void switchToBattle(ActionEvent event) throws IOException {
+
         root = new VBox();
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         root.getChildren().add(createMenuBar());
         table = new StackPane();
+        ImageView logo = new ImageView(player.icon);
+        logo.setTranslateY(300);
+        logo.setTranslateX(200);
+        root.getChildren().addAll(logo);
         root.getChildren().add(table);
         URL styleURL = getClass().getResource("/style.css");
         String stylesheet = styleURL.toExternalForm();
-        if (battleScene == null) battleScene = new Scene(root,width,height);
+        if (battleScene == null)
+            battleScene = new Scene(root, width, height);
         battleScene.getStylesheets().add(stylesheet);
         deal();
 
         stage.setScene(battleScene);
-        stage.show();        
+        stage.show();
     }
 
     public void switchToTest(ActionEvent event) throws IOException {
         root = new VBox();
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         root.getChildren().add(createMenuBar());
         addMouseHandler();
         table = new StackPane();
         root.getChildren().add(table);
         URL styleURL = getClass().getResource("/style.css");
         String stylesheet = styleURL.toExternalForm();
-        if (battleScene == null) battleScene = new Scene(root,width,height);
+        if (battleScene == null)
+            battleScene = new Scene(root, width, height);
         battleScene.getStylesheets().add(stylesheet);
         stage.setScene(battleScene);
-        stage.show();        
+        stage.show();
     }
 
-    private void addMouseHandler()
-    {
+    private void addMouseHandler() {
         root.setOnMouseClicked(event -> {
             deal();
         });
     }
 
-    private void clearTable()
-    {
+    private void clearTable() {
         table.getChildren().removeIf(node -> node instanceof ImageView);
     }
 
-    private void deal()
-    {
+    private void deal() {
         clearTable();
-        PlayerDeck d = new PlayerDeck();
+        Deck d = new Deck();
         d.shuffle();
-        for (int i = 1; i <=7; i++)
-        {
+        for (int i = 1; i <= 7; i++) {
             Card card = d.draw();
             placeCard(card, i);
         }
@@ -141,15 +120,14 @@ public class App extends Application
         placeCard(null, 9);
     }
 
-    private MenuBar createMenuBar()
-    {
+    private MenuBar createMenuBar() {
         MenuBar menuBar = new MenuBar();
-    	menuBar.getStyleClass().add("menubar");
+        menuBar.getStyleClass().add("menubar");
 
         //
         // File Menu
         //
-    	Menu fileMenu = new Menu("File");
+        Menu fileMenu = new Menu("File");
 
         addMenuItem(fileMenu, "Load from file", () -> {
             System.out.println("Load from file");
@@ -162,20 +140,16 @@ public class App extends Application
 
     private static Map<Card, ImageView> cardImageViews = new HashMap<>();
 
-    private static ImageView getBackOfCard()
-    {
+    private static ImageView getBackOfCard() {
         // we need a new one every time
         return new ImageView(new Image(App.class.getResource("/assets/Back.png").toExternalForm()));
     }
 
-    private static ImageView getCardImageView(Card card)
-    {
-        if (card == null)
-        {
+    private static ImageView getCardImageView(Card card) {
+        if (card == null) {
             return getBackOfCard();
         }
-        if (!cardImageViews.containsKey(card))
-        {
+        if (!cardImageViews.containsKey(card)) {
             String cardName = card.toString();
             String cardPath = "/assets/" + cardName + ".png";
             System.out.println("cardPath: " + cardPath);
@@ -187,11 +161,11 @@ public class App extends Application
         return cardImageViews.get(card);
     }
 
-    private void placeCard(Card card, int number)
-    {
+    private void placeCard(Card card, int number) {
         /*
          * The xOffset and yOffset are in terms of where the card should be placed
-         * By default a StackPane will center the card at W/2, 0, so the center of the top
+         * By default a StackPane will center the card at W/2, 0, so the center of the
+         * top
          * 1,2,3 are the flop
          * 4 is the turn
          * 5 is the river
@@ -202,27 +176,26 @@ public class App extends Application
          */
         int xOffset = 0;
         int yOffset = 0;
-        switch (number)
-        {
+        switch (number) {
             case 1:
-                xOffset = -2*64;
-                yOffset = height/2 - 100;
+                xOffset = -2 * 64;
+                yOffset = height / 2 - 100;
                 break;
             case 2:
                 xOffset = -64;
-                yOffset = height/2 - 100;
+                yOffset = height / 2 - 100;
                 break;
             case 3:
                 xOffset = 0;
-                yOffset = height/2 - 100;
+                yOffset = height / 2 - 100;
                 break;
             case 4:
                 xOffset = 64;
-                yOffset = height/2 - 100;
+                yOffset = height / 2 - 100;
                 break;
             case 5:
-                xOffset = 2*64;
-                yOffset = height/2 - 100;
+                xOffset = 2 * 64;
+                yOffset = height / 2 - 100;
                 break;
             case 6:
                 xOffset = -32;
@@ -250,19 +223,16 @@ public class App extends Application
         table.getChildren().add(cardImageView);
     }
 
-    private void addMenuItem(Menu menu, String name, Runnable action)
-    {
+    private void addMenuItem(Menu menu, String name, Runnable action) {
         MenuItem menuItem = new MenuItem(name);
         menuItem.setOnAction(event -> action.run());
         menu.getItems().add(menuItem);
     }
 
-    private void addKeyHandler()
-    {
+    private void addKeyHandler() {
         root.setOnKeyPressed(event -> {
             System.out.println("Key pressed: " + event.getCode());
-            switch (event.getCode())
-            {
+            switch (event.getCode()) {
                 // check for the key input
                 case ESCAPE:
                     // remove focus from the textfields by giving it to the root VBox
@@ -275,13 +245,12 @@ public class App extends Application
                 default:
                     System.out.println("you typed key: " + event.getCode());
                     break;
-                
+
             }
         });
     }
 
-    public static void main(String[] args) 
-    {
+    public static void main(String[] args) {
         launch(args);
     }
 }

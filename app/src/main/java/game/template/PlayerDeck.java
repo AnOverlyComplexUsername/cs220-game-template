@@ -4,29 +4,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PlayerDeck
-{
-    private List<AbstractCard> cards = new ArrayList<>();
+public class PlayerDeck {
+    // private List<AbstractCard> cards = new ArrayList<>();
 
-    public PlayerDeck()
-    {
-        for (Card card : Card.values())
-        {
-            cards.add(card);
-        }
-    }
+    // public PlayerDeck() {
+    // for (Card card : Card.values()) {
+    // cards.add(card);
+    // }
+    // }
 
-    public void shuffle()
-    {
-        // shuffle the deck
-        // randomize the order of the cards
-        Collections.shuffle(cards);
-    }
+    // public void shuffle() {
+    // // shuffle the deck
+    // // randomize the order of the cards
+    // Collections.shuffle(cards);
+    // }
 
-    public Card draw()
-    {
-        // remove the top card from the deck
-        return cards.remove(cards.size() - 1);
-    }
+    // public Card draw() {
+    // // remove the top card from the deck
+    // return cards.remove(cards.size() - 1);
+    // }
 
 }
